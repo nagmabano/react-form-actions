@@ -1,7 +1,8 @@
-import {isEmail, isNotEmpty, isEqualToOtherValue, hasMinLength} from "../util/validation.js"
+import {isEmail, isNotEmpty, isEqualToOtherValue, hasMinLength} from "../util/validation.js";
+import { useActionState } from "react";
 
 export default function Signup() {
-  function signupAction(formData) {
+  function signupAction(preFormState, formData) {
     const email = formData.get('email');
     const password = formData.get('password');
     const confirmPassword = formData.get('confirm-password');
@@ -9,13 +10,12 @@ export default function Signup() {
     const lastName = formData.get('last-name');
     const role = formData.get('role');
     const terms = formData.get('terms');
-    const acquisitionChannel = formData.getAll('acquisition')
-    console.log(formData);
+    const acquisitionChannel = formData.getAll('acquisition');
 
     let errors = [];
 
     if(!isEmail(email)) {
-      errors.push["Invalid emal address."]
+      errors.push(["Invalid emal address."]);
     }
     if(!isNotEmpty(password) || !hasMinLength(password, 6)) {
       errors.push("You must provide a password with atleast 6 characters.")
@@ -35,9 +35,18 @@ export default function Signup() {
     if(acquisitionChannel.length == 0) {
       errors.push("Please select atlease on aquisition channel.")
     }
+    if(errors.length > 0) {
+      return {errors};
+    }
+
+    return {errors: null};
   }
+
+  const [formState, formAction] = useActionState(signupAction, {errors: null});
+
+
   return (
-    <form action={signupAction}>
+    <form action={formAction}>
       <h2>Welcome on board!</h2>
       <p>We just need a little bit of data from you to get you started 🚀</p>
 
@@ -121,6 +130,10 @@ export default function Signup() {
           agree to the terms and conditions
         </label>
       </div>
+
+      {formState.errors && <ul className="error">
+        {formState.errors.map(error => <li key={error}>{error}</li>)}
+        </ul>}
 
       <p className="form-actions">
         <button type="reset" className="button button-flat">
