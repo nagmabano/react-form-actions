@@ -1,8 +1,7 @@
 import {isEmail, isNotEmpty, isEqualToOtherValue, hasMinLength} from "../util/validation.js";
 import { useActionState } from "react";
 
-export default function Signup() {
-  function signupAction(preFormState, formData) {
+function signupAction(preFormState, formData) {
     const email = formData.get('email');
     const password = formData.get('password');
     const confirmPassword = formData.get('confirm-password');
@@ -51,8 +50,8 @@ export default function Signup() {
     return {errors: null};
   }
 
+export default function Signup() {
   const [formState, formAction] = useActionState(signupAction, {errors: null});
-
 
   return (
     <form action={formAction}>
